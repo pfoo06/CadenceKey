@@ -1,0 +1,30 @@
+            @font-face {
+                font-family: 'SwanseaBold';
+                src: url('media/swansea-font/SwanseaBold-D0ox.ttf') format('truetype');
+                font-weight: 1200;
+
+
+            }
+            @font-face {
+                font-family: 'SwanseaItaliBold';
+                src: url('media/swansea-font/SwanseaBoldItalic-p3Dv.ttf') format('truetype');
+                font-weight: 700;
+
+
+            }
+            /* #c2ae93; */
+            /* 1D546D */
+            /* background-color:#37353E; */
+            body{font-family:"Rubik"; background-size:cover;background-image:url('media/Image1.gif');background-attachment:fixed; color: #e1e1d1;}
+            .navbar-brand{font-size:40px;}
+            .navbar{font-size:30px;}
+            .custom1{background-color:#982323;color: #b4b48f;}
+            .custom2{background-color:#9b1009;color: #b4b48f;}
+            .rubik-glitch-pop{font-family: "Rubik Glitch Pop";font-weight: 400;color: #fffff2;}x
+            .swansea{font-family: "SwanseaBold";font-weight: 100;}
+            .ski-card{transition: transform 0.4s ease, box-shadow 0.5s ease;background-color:#D9A2D9}
+            .ski-card:hover{transform: translateY(-10px);box-shadow: 0px 10px 20px rgba(0,0,0,0.5); cursor:pointer;}
+            .landing{height:100vh;background-size:cover; background-image:url('media/Image1.gif');background-repeat:no-repeat;}
+            .hidden{display: none !important;}
+            .display-text{font-family:"Swansea";font-size:clamp(3rem,15vw,9rem);}
+            .swanseaItaliBold{font-family:"SwanseaBold";font-size:clamp(3rem,15vw,9rem);}
