@@ -30,6 +30,15 @@ infoLink.addEventListener('click',(e) => {
 
 })
 
+function getDummyAudio(frequency, sampleRate, bufferSize, ){
+    const buffer = new Float32Array(bufferSize);
+    for(let i =0; i < bufferSize;i++){
+        let time = i/sampleRate;
+        buffer[i]= Math.sin(2* Math.PI * frequency * time)
+    }
+    return buffer;
+}
+
 
 
 
