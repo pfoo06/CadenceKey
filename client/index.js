@@ -35,6 +35,8 @@ infoLink.addEventListener('click',(e) => {
 const startButton = document.getElementById('startBtn');
 const stopButton = document.getElementById('stopBtn');
 
+let isRecording = false;
+let pitchBucket = [];
 let audioContext;
 let micStream
 let sourceNode;
@@ -60,6 +62,15 @@ startButton.addEventListener('click', async() => {
     await audioContext.audioWorklet.addModule('audioProcessing.js');
     audioWorkletNode = new AudioWorkletNode(audioContext,'audioProcessing');
     sourceNode.connect(audioWorkletNode);
+    audioWorkletNode.port.onmessage = (event) =>{
+        let liveAudioBuffer = event.data;
+        if (isRecording == true){
+            let hz = autoCorrelate(liveAudioBuffer,audioContext.sampleRate);
+            if (hz != -1){
+                pitchBucket.push(hz)
+            }
+        }
+    }
     console.log("recording started")
 
 });
@@ -104,7 +115,7 @@ function autoCorrelate(buffer, sampleRate){
         for(let j=0;j<size-i;j++){
             c[i] = c[i] + buffer[j] * buffer[i+j];
         }
-        }
+    }
 
     let d = 0; while (c[d] > c[d+1]){d++};
 
@@ -131,7 +142,7 @@ function autoCorrelate(buffer, sampleRate){
     let T0 = maxpos
     let finalHz = sampleRate / T0
         return finalHz;
-}
+
 
 
 
