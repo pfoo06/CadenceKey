@@ -104,6 +104,7 @@ function autoCorrelate(buffer, sampleRate){
         for(let j=0;j<size-i;j++){
             c[i] = c[i] + buffer[j] * buffer[i+j];
         }
+        }
 
     let d = 0; while (c[d] > c[d+1]){d++};
 
@@ -116,7 +117,7 @@ function autoCorrelate(buffer, sampleRate){
         }
     }
     let pThreshold = maxval * 0.9;
-    let maxpos = -1;
+    maxpos = -1;
     for (let i = d;i<size;i++){
         if (c[i] > pThreshold){
             maxpos = i;
