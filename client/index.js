@@ -85,7 +85,11 @@ stopButton.addEventListener('click',() => {
 })
 //record snippet
 recordButton.addEventListener('click',() => {
-
+    pitchBucket = [];
+    isRecording = true;
+    setTimeout(()=>{
+        isRecording = false;
+        finalizeNote()},1000)
 
 })
 
@@ -97,6 +101,16 @@ function getDummyAudio(frequency, sampleRate, bufferSize, ){
         buffer[i]= Math.sin(2* Math.PI * frequency * time)
     }
     return buffer;
+}
+function finalizeNote(){
+    if (pitchBucket.length === 0){
+        console.log("error")
+        return
+    }
+    pitchBucket.sort((a,b) => a-b)
+    
+    let finalHz = pitchBucket[Math.floor(pitchBucket.length / 2)]
+    console.log(finalHz)
 }
 function autoCorrelate(buffer, sampleRate){
     let size = buffer.length;
