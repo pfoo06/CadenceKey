@@ -17,7 +17,7 @@ function hideView(viewID) {
     views[viewID].classList.add('hidden');
 }
 
-entryBtn.addEventListener('click',() => {switchView('gallery'); loadSkis();})
+entryBtn.addEventListener('click',() => {switchView('gallery');})
 
 cadenceKeyLogo.addEventListener('click',(e) => {
     e.preventDefault();
@@ -34,6 +34,7 @@ infoLink.addEventListener('click',(e) => {
 
 const startButton = document.getElementById('startBtn');
 const stopButton = document.getElementById('stopBtn');
+const recordButton = document.getElementById('recBtn');
 
 let isRecording = false;
 let pitchBucket = [];
@@ -80,6 +81,11 @@ stopButton.addEventListener('click',() => {
     micStream.getTracks().forEach(track => track.stop());
     audioContext.close();
     console.log("recording stopped.");
+
+})
+//record snippet
+recordButton.addEventListener('click',() => {
+
 
 })
 
