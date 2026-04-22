@@ -34,10 +34,13 @@ infoLink.addEventListener('click',(e) => {
 
 const startButton = document.getElementById('startBtn');
 const stopButton = document.getElementById('stopBtn');
-const recordButton = document.getElementById('recBtn');
+const recordLowButton = document.getElementById('recLBtn');
+const recordHighButton = document.getElementById('recHBtn');
 
 let isRecording = false;
 let pitchBucket = [];
+let userLow = null;
+let UserHigh = null;
 let audioContext;
 let micStream
 let sourceNode;
@@ -84,12 +87,20 @@ stopButton.addEventListener('click',() => {
 
 })
 //record snippet
-recordButton.addEventListener('click',() => {
+recordLowButton.addEventListener('click',() => {
     pitchBucket = [];
     isRecording = true;
     setTimeout(()=>{
         isRecording = false;
-        finalizeNote()},1000)
+        finalizeNote("Low")},1000)
+
+})
+recordHighButton.addEventListener('click',() => {
+    pitchBucket = [];
+    isRecording = true;
+    setTimeout(()=>{
+        isRecording = false;
+        finalizeNote("High")},1000)
 
 })
 
@@ -102,7 +113,7 @@ function getDummyAudio(frequency, sampleRate, bufferSize, ){
     }
     return buffer;
 }
-function finalizeNote(){
+function finalizeNote(targetNote){
     if (pitchBucket.length === 0){
         console.log("error")
         return
@@ -110,7 +121,17 @@ function finalizeNote(){
     pitchBucket.sort((a,b) => a-b)
     
     let finalHz = pitchBucket[Math.floor(pitchBucket.length / 2)]
-    console.log(finalHz)
+    console.log(finalHz);
+    if (targetNote === "Low"){
+        userLow = FreqToNote(finalHz).midi;
+        userLow = FreqToNote(finalHz).name;
+        console.log(userLow)
+    }else if(targetNote === "High"){
+        userHigh = FreqToNote(finalHz).midi
+        userHigh = FreqToNote(finalHz).name;
+        console.log(userHigh)
+    }
+    if (userLow && userHigh !== null){calcVoiceType(userLow,userHigh)}
 }
 function autoCorrelate(buffer, sampleRate){
     let size = buffer.length;
@@ -162,16 +183,33 @@ function autoCorrelate(buffer, sampleRate){
     let T0 = maxpos
     let finalHz = sampleRate / T0
         return finalHz;
+}
+function FreqToNote(frequency){
+        if(frequency === -1|| frequency===Infinity||isNaN(frequency)){return{name:"--",midi:0}}
+        let halfStepToA = Math.round(12*Math.log2(frequency/440));
+        const noteNames =["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+        let absoluteNumber = halfStepToA + 57;
+        let noteIndex = absoluteNumber % 12;
+        let octave = Math.floor(absoluteNumber /12);
+        return{name : noteNames[noteIndex] + octave, midi : absoluteNumber}
+}
+function calcVoiceType(lowMidi,highMidi){
+        let voiceType = "unknown";
 
-
-
-
-
-
-
-
-
-
-
+        if( lowMidi >= 36 && highMidi <=64){
+            voiceType = "Bass";
+        }else if( lowMidi >= 43 && highMidi <=67){
+            voiceType = "Baritone";
+        }else if( lowMidi >= 48 && highMidi <=72){
+            voiceType = "Tenor";
+        }else if( lowMidi >= 53 && highMidi <=77){
+            voiceType = "Alto";
+        }else if( lowMidi >= 57 && highMidi <=81){
+            voiceType = "Mezzo-Soprano";
+        }else if( lowMidi >= 60 && highMidi <=84){
+            voiceType = "Soprano";
+        }else {voiceType ="weird"}
+        console.log(voiceType)
+        return voiceType
 }
 
