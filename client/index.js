@@ -40,7 +40,7 @@ const recordHighButton = document.getElementById('recHBtn');
 let isRecording = false;
 let pitchBucket = [];
 let userLow = null;
-let UserHigh = null;
+let userHigh = null;
 let audioContext;
 let micStream
 let sourceNode;
@@ -88,6 +88,16 @@ stopButton.addEventListener('click',() => {
 })
 //record snippet
 recordLowButton.addEventListener('click',() => {
+    userLow = null;
+    userHigh = null;
+
+    resultPage = document.getElementById('results')
+    if (resultPage.style.display === "none") {
+        resultPage.style.display = "block";
+    } else {
+        resultPage.style.display = "none";
+    }
+
     pitchBucket = [];
     isRecording = true;
     setTimeout(()=>{
@@ -113,6 +123,7 @@ function getDummyAudio(frequency, sampleRate, bufferSize, ){
     }
     return buffer;
 }
+
 function finalizeNote(targetNote){
     if (pitchBucket.length === 0){
         console.log("error")
@@ -123,15 +134,18 @@ function finalizeNote(targetNote){
     let finalHz = pitchBucket[Math.floor(pitchBucket.length / 2)]
     console.log(finalHz);
     if (targetNote === "Low"){
-        userLow = FreqToNote(finalHz).midi;
-        userLow = FreqToNote(finalHz).name;
+        userLow = FreqToNote(finalHz);
         console.log(userLow)
     }else if(targetNote === "High"){
-        userHigh = FreqToNote(finalHz).midi
-        userHigh = FreqToNote(finalHz).name;
+        userHigh = FreqToNote(finalHz);
         console.log(userHigh)
     }
-    if (userLow && userHigh !== null){calcVoiceType(userLow,userHigh)}
+
+    let range = ""
+    if (userLow !== null && userHigh !== null){
+        outputResult(userLow.name,userHigh.name);
+
+    }
 }
 function autoCorrelate(buffer, sampleRate){
     let size = buffer.length;
@@ -184,6 +198,7 @@ function autoCorrelate(buffer, sampleRate){
     let finalHz = sampleRate / T0
         return finalHz;
 }
+
 function FreqToNote(frequency){
         if(frequency === -1|| frequency===Infinity||isNaN(frequency)){return{name:"--",midi:0}}
         let halfStepToA = Math.round(12*Math.log2(frequency/440));
@@ -193,23 +208,46 @@ function FreqToNote(frequency){
         let octave = Math.floor(absoluteNumber /12);
         return{name : noteNames[noteIndex] + octave, midi : absoluteNumber}
 }
+
 function calcVoiceType(lowMidi,highMidi){
         let voiceType = "unknown";
+        
+        let bassDistance = Math.sqrt(Math.pow((lowMidi-36),2)+ Math.pow((highMidi-64),2))
+        let bariDistance = Math.sqrt(Math.pow((lowMidi-43),2)+ Math.pow((highMidi-67),2))
+        let tenDistance = Math.sqrt(Math.pow((lowMidi-48),2)+ Math.pow((highMidi-72),2))
+        let altDistance = Math.sqrt(Math.pow((lowMidi-53),2)+ Math.pow((highMidi-77),2))
+        let mezzoDistance = Math.sqrt(Math.pow((lowMidi-57),2)+ Math.pow((highMidi-81),2))
+        let sopDistance = Math.sqrt(Math.pow((lowMidi-60),2)+ Math.pow((highMidi-84),2))
 
-        if( lowMidi >= 36 && highMidi <=64){
-            voiceType = "Bass";
-        }else if( lowMidi >= 43 && highMidi <=67){
-            voiceType = "Baritone";
-        }else if( lowMidi >= 48 && highMidi <=72){
-            voiceType = "Tenor";
-        }else if( lowMidi >= 53 && highMidi <=77){
-            voiceType = "Alto";
-        }else if( lowMidi >= 57 && highMidi <=81){
-            voiceType = "Mezzo-Soprano";
-        }else if( lowMidi >= 60 && highMidi <=84){
-            voiceType = "Soprano";
+        if(Math.min(bassDistance,bariDistance,tenDistance,altDistance,mezzoDistance,sopDistance)==bassDistance){
+            voiceType = " a Bass";
+        }else if(Math.min(bassDistance,bariDistance,tenDistance,altDistance,mezzoDistance,sopDistance)==bariDistance){
+            voiceType = " a Baritone";
+        }else if(Math.min(bassDistance,bariDistance,tenDistance,altDistance,mezzoDistance,sopDistance)==tenDistance){
+            voiceType = "a Tenor";
+        }else if(Math.min(bassDistance,bariDistance,tenDistance,altDistance,mezzoDistance,sopDistance)==altDistance){
+            voiceType = "an Alto";
+        }else if(Math.min(bassDistance,bariDistance,tenDistance,altDistance,mezzoDistance,sopDistance)==mezzoDistance){
+            voiceType = "a Mezzo-Soprano";
+        }else if(Math.min(bassDistance,bariDistance,tenDistance,altDistance,mezzoDistance,sopDistance)==sopDistance){
+            voiceType = "a Soprano";        
         }else {voiceType ="weird"}
-        console.log(voiceType)
-        return voiceType
+
+        console.log(voiceType);
+        return voiceType;
+
+}
+
+function outputResult(lowNote,highNote){
+    range = calcVoiceType(userLow.midi,userHigh.midi);
+    console.log(range);
+    resultPage = document.getElementById('results')
+    resultPage.innerHTML = `
+    <h1>You are ... ${range}!</h1> 
+    <h2>Your lowest note is a ${lowNote} and your highest note is a ${highNote}</h2>`;
+
+    resultPage.style.display = "block";
+
+
 }
 
