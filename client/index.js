@@ -81,6 +81,7 @@ startButton.addEventListener('click', async() => {
 
 stopButton.addEventListener('click',() => {
     //closing audio stream
+
     micStream.getTracks().forEach(track => track.stop());
     audioContext.close();
     console.log("recording stopped.");
@@ -88,15 +89,10 @@ stopButton.addEventListener('click',() => {
 })
 //record snippet
 recordLowButton.addEventListener('click',() => {
+
     userLow = null;
     userHigh = null;
-
-    resultPage = document.getElementById('results')
-    if (resultPage.style.display === "none") {
-        resultPage.style.display = "block";
-    } else {
-        resultPage.style.display = "none";
-    }
+    document.getElementById('results').style.display = "none";
 
     pitchBucket = [];
     isRecording = true;
@@ -182,7 +178,7 @@ function autoCorrelate(buffer, sampleRate){
             maxpos = i;
         }
     }
-    let pThreshold = maxval * 0.9;
+    let pThreshold = maxval * 0.7;
     maxpos = -1;
     for (let i = d;i<size;i++){
         if (c[i] > pThreshold){
@@ -203,9 +199,9 @@ function FreqToNote(frequency){
         if(frequency === -1|| frequency===Infinity||isNaN(frequency)){return{name:"--",midi:0}}
         let halfStepToA = Math.round(12*Math.log2(frequency/440));
         const noteNames =["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
-        let absoluteNumber = halfStepToA + 57;
+        let absoluteNumber = halfStepToA + 69;
         let noteIndex = absoluteNumber % 12;
-        let octave = Math.floor(absoluteNumber /12);
+        let octave = Math.floor(absoluteNumber /12)-1;
         return{name : noteNames[noteIndex] + octave, midi : absoluteNumber}
 }
 
